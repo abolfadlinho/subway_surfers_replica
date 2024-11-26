@@ -15,6 +15,7 @@
 #include <thread>
 #include <vector>
 #include <algorithm>
+#include "OBJModel.h"
 
 
 #define GLUT_KEY_ESCAPE 27
@@ -23,6 +24,17 @@
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
+
+OBJModel player;
+OBJModel track;
+
+void LoadPlayer(const char* modelPath) {
+	player.LoadFromFile(modelPath);  // Load model from file
+}
+void LoadTrack(const char* modelPath) {
+	track.LoadFromFile(modelPath);  // Load model from file
+}
+
 
 //game variables
 bool  gameRunning   = true;
@@ -181,6 +193,40 @@ void drawBlock(float x, float y, float z) {
 	glTranslatef(x, y, z);
 	glScalef(1.0f, 2.5f, blockLength);
 	glutSolidCube(1.0f);
+	/*glBegin(GL_TRIANGLES); // Start drawing triangles
+
+	// Loop through each triangle in the model
+	for (int i = 0; i < train.GetVertexCount(); ++i) {
+		// Assuming the model provides data in vertex color and normal format
+		// (position x, y, z), (color r, g, b), (normal x, y, z)
+		std::vector<float> vertexData = train.GetVertexData();
+
+		// Get position
+		float x = vertexData[i * 9];
+		float y = vertexData[i * 9 + 1];
+		float z = vertexData[i * 9 + 2];
+
+		// Get color
+		float r = vertexData[i * 9 + 3];
+		float g = vertexData[i * 9 + 4];
+		float b = vertexData[i * 9 + 5];
+
+		// Get normal
+		float nx = vertexData[i * 9 + 6];
+		float ny = vertexData[i * 9 + 7];
+		float nz = vertexData[i * 9 + 8];
+
+		// Set material color
+		glColor3f(r, g, b);
+
+		// Set normal
+		glNormal3f(nx, ny, nz);
+
+		// Set vertex position
+		glVertex3f(x, y, z);
+	}
+
+	glEnd();*/
 
 	glPopMatrix();
 }
@@ -239,14 +285,7 @@ void drawLeftWall(double thickness) {
 	glPushMatrix();
 	glRotated(90, 0, 0, 1.0);
 	glTranslated(0.5, 3.25, -5.0);
-	glScaled(1.0, thickness, 16.5);
-	glutSolidCube(1);
-	glPopMatrix();
-	glColor3f(0.85f, 0.85f, 0.85f);
-	glPushMatrix();
-	glRotated(90, 0, 0, 1.0);
-	glTranslated(1.5, 3.25, -5.0);
-	glScaled(1.0, thickness, 16.5);
+	glScaled(10.0, thickness, 16.5);
 	glutSolidCube(1);
 	glPopMatrix();
 	glColor3f(1.0, 1.0, 1.0);
@@ -258,7 +297,7 @@ void drawTunnel() {
 	glPushMatrix();
 	glRotated(-90, 1.0, 0.0, 0.0);
 	glTranslated(0.0, 13.5, 1.0);
-	glScaled(6.5, 1.0f, 2.0);
+	glScaled(6.5, 1.0f, 10.0);
 	glutSolidCube(1);
 	glPopMatrix();
 
@@ -280,15 +319,7 @@ void drawRightWall(double thickness) {
 	glRotated(90, 0.0, 0.0, 1.0);
 	glTranslated(0.0, -1.0, -5.0);
 	glTranslated(0.5, -2.25, 0.0);
-	glScaled(1.0, thickness, 16.5);
-	glutSolidCube(1);
-	glPopMatrix();
-	glColor3f(0.85f, 0.85f, 0.85f);
-	glPushMatrix();
-	glRotated(90, 0.0, 0.0, 1.0);
-	glTranslated(0.0, -1.0, -5.0);
-	glTranslated(1.5, -2.25, 0.0);
-	glScaled(1.0, thickness, 16.5);
+	glScaled(10.0, thickness, 16.5);
 	glutSolidCube(1);
 	glPopMatrix();
 	glColor3f(1.0, 1.0, 1.0);
@@ -309,6 +340,50 @@ void drawFloor(double thickness) {
 	double solidWidth = 1.0; // Width of each solid
 	double solidHeight = 0.05; // Height of each solid
 	double solidDepth = 16.5; // Depth of each solid
+
+	/*for (int i = 0; i < 3; i++) {
+		glPushMatrix();
+		glTranslated(xPositions[i], 0.0, -5.0); // Position each solid
+		//glRotated(90, 0.0, 1.0, 0.0);
+		glScaled(1.0, 1.0, 0.3);
+		glScaled(solidWidth, solidHeight, solidDepth);       // Scale the solid
+		glutSolidCube(1); 
+		/*glBegin(GL_TRIANGLES); // Start drawing triangles
+
+		// Loop through each triangle in the model
+		for (int i = 0; i < track.GetVertexCount(); ++i) {
+			// Assuming the model provides data in vertex color and normal format
+			// (position x, y, z), (color r, g, b), (normal x, y, z)
+			std::vector<float> vertexData = track.GetVertexData();
+
+			// Get position
+			float x = vertexData[i * 9];
+			float y = vertexData[i * 9 + 1];
+			float z = vertexData[i * 9 + 2];
+
+			// Get color
+			float r = vertexData[i * 9 + 3];
+			float g = vertexData[i * 9 + 4];
+			float b = vertexData[i * 9 + 5];
+
+			// Get normal
+			float nx = vertexData[i * 9 + 6];
+			float ny = vertexData[i * 9 + 7];
+			float nz = vertexData[i * 9 + 8];
+
+			// Set material color
+			glColor3f(r, g, b);
+
+			// Set normal
+			glNormal3f(nx, ny, nz);
+
+			// Set vertex position
+			glVertex3f(x, y, z);
+		}
+
+		glEnd();
+		glPopMatrix();
+	}*/
 
 	for (int i = 0; i < 3; i++) {
 		glPushMatrix();
@@ -402,8 +477,45 @@ void setupScene() {
 
 void drawPlayer() {
 	glPushMatrix();
-	glTranslatef(playerX, playerY-0.6, playerZ);
-	drawHuman();
+	glTranslatef(playerX, playerY, playerZ);
+	//drawHuman();
+	// Set color and lighting for each vertex
+	glScaled(0.1, 0.1, 0.1);
+	glRotatef(180, 0, 1, 0);
+	glBegin(GL_TRIANGLES); // Start drawing triangles
+
+	// Loop through each triangle in the model
+	for (int i = 0; i < player.GetVertexCount(); ++i) {
+		// Assuming the model provides data in vertex color and normal format
+		// (position x, y, z), (color r, g, b), (normal x, y, z)
+		std::vector<float> vertexData = player.GetVertexData();
+
+		// Get position
+		float x = vertexData[i * 9];
+		float y = vertexData[i * 9 + 1];
+		float z = vertexData[i * 9 + 2];
+
+		// Get color
+		float r = vertexData[i * 9 + 3];
+		float g = vertexData[i * 9 + 4];
+		float b = vertexData[i * 9 + 5];
+
+		// Get normal
+		float nx = vertexData[i * 9 + 6];
+		float ny = vertexData[i * 9 + 7];
+		float nz = vertexData[i * 9 + 8];
+
+		// Set material color
+		glColor3f(r, g, b);
+
+		// Set normal
+		glNormal3f(nx, ny, nz);
+
+		// Set vertex position
+		glVertex3f(x, y, z);
+	}
+
+	glEnd();
 	glPopMatrix();
 }
 
@@ -574,7 +686,6 @@ void Display() {
 	drawCentreHurdle(centreHurdleZ);
 	drawRightHurdle(rightHurdleZ);
 
-
 	if (!gameMessage.empty()) {
 		if (gameMessage.find("GAME WON!") != std::string::npos) {
 			glClearColor(7.0f, 0.0f, 0.0f, 1.0f);
@@ -687,10 +798,16 @@ void Special(int key, int x, int y) {
 void init() {
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.68f, 0.85f, 0.90f, 1.0f);  // Set background color
-
+	LoadPlayer("Jake.obj");
+	//LoadTrack("railroad track.obj");
 }
 
-
+void Reshape(int w, int h) {
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(45.0f, (float)w / (float)h, 0.1f, 100.0f);
+}
 
 void main(int argc, char** argv) {
 
@@ -703,6 +820,7 @@ void main(int argc, char** argv) {
 
 	glutCreateWindow("Urban Runner");
 	glutDisplayFunc(Display);
+	glutReshapeFunc(Reshape);
 	glutKeyboardFunc(Keyboard);
 	glutSpecialFunc(Special);
 
