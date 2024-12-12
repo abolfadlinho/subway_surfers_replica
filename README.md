@@ -54,10 +54,11 @@ The game features two scenes that the player will navigate through:
 
 ## Setup and Installation
 
-1. **Clone or download the project** to your local machine.
-2. **Install OpenGL** (OpenGL 3.x) and ensure you have the necessary libraries for C++.
-3. **Compile the project** using your preferred C++ IDE or build system.
-4. **Run the game** by executing the compiled file.
+1. **Install the zip file projectClean.zip** this will be your project directory.
+2. **Install OpenGLMeshLoader.cpp** this is the main source file.
+3. **Install the zip file over here: https://drive.google.com/drive/folders/1c5-VdcPIngfy_hrVFqtSu975b_dEedY7?usp=drive_link** this folder contains the models, textures and sounds folders of the project.
+4. **Paste .cpp and contents of drive in your project directory** and you are ready to go.
+5. **Find project presentation at https://drive.google.com/file/d/1fz8zv7EaJNzdA0MjhkYAYiyslQS9F3I6/view?usp=drive_link**
 
 ## Usage
 
