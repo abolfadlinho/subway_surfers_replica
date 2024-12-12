@@ -76,17 +76,19 @@ Model_3DS tunnel2;
 Model_3DS trash;
 Model_3DS diamond;
 Model_3DS finish_line;
+Model_3DS finish_line2;
 Model_3DS lamp;
 Model_3DS person;
 
 
 GLTexture tex_ground; //this will store grass texture on floor
+GLTexture tex_sand;
 
 //camera variables
 GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)480 / (GLdouble)740;
 GLdouble zNear = 0.1;
-GLdouble zFar = 120;
+GLdouble zFar = 150;
 
 //light variables
 GLfloat lightColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -126,6 +128,9 @@ void playCrash() {
 }
 void playPoint() {
 	PlaySound(TEXT("Sounds/point.wav"), NULL, SND_ASYNC | SND_FILENAME);
+}
+void playBoing() {
+	PlaySound(TEXT("Sounds/boing.wav"), NULL, SND_ASYNC | SND_FILENAME);
 }
 
 void InitLightSource()
@@ -177,7 +182,7 @@ void drawCoin(float x, float z) {
 	if (x == 1.5f) glTranslatef(1.3f, 0.0f, 0.0f);
 	if (x == -1.5f) glTranslatef(-1.3f, 0.0f, 0.0f);
 	glScalef(0.08f, 0.08f, 0.08f); //logic for scaling
-	if (level == 2) {
+	if (level == 1) {
 		glRotatef(-timeX * 100, 0, 1, 0);
 		glRotatef(90.0, 1.0, 0.0, 0.0); //logic for rotating
 		coin.Draw();
@@ -196,7 +201,15 @@ void drawCoin(float x, float z) {
 		if (x == -1.5f) glTranslatef(-1.3f, 0.0f, 0.0f);
 		glRotatef(90.0, 0.0, 1.0, 0.0);
 		glScalef(0.05f, 0.15f, 0.15f);
-		finish_line.Draw();
+		if (level == 1) {
+			glScalef(3.0f, 2.0f, 0.5f);
+			glRotatef(90.0, 0.0, 1.0, 0.0);
+			glTranslatef(15.0f, 0.0, 0.0);
+			finish_line2.Draw();
+		}
+		else {
+			finish_line.Draw();
+		}
 		glPopMatrix();
 	}
 
@@ -260,7 +273,12 @@ void drawFloor() {
 
 	glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
 
-	glBindTexture(GL_TEXTURE_2D, tex_ground.texture[0]);	// Bind the ground texture
+	if(level == 1) {
+		glBindTexture(GL_TEXTURE_2D, tex_ground.texture[0]);	// Bind the ground texture
+	}
+	else {
+		glBindTexture(GL_TEXTURE_2D, tex_sand.texture[0]);	// Bind the ground texture
+	}
 
 	glPushMatrix();
 	glBegin(GL_QUADS);
@@ -298,6 +316,23 @@ void drawFloor() {
 	glPopMatrix();
 }
 void drawLamp() {
+
+	glEnable(GL_LIGHT1);
+
+	// Spotlight properties
+	float flickerIntensity = (timeX != 2.0) ? (timeX * 100.0f) : (0.0); // 0.3f + 0.1f * sin(timeX * 10.0f); // Vary intensity between 0.3 and 0.9
+	GLfloat spotlightColor[] = {flickerIntensity, 1.0f, 0.0f, 1.0f }; // Red/Cyan color
+	GLfloat spotlightPosition[] = { 0.0, 1.0f, playerZ + 12.0f, 1.0f }; // Slightly above the player
+	GLfloat spotlightDirection[] = { 0.0f, -1.0f, 0.0f }; // Pointing downwards
+	GLfloat spotlightCutoff = 100.0f; // Cone angle in degrees
+
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, spotlightColor);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, spotlightColor);
+	glLightfv(GL_LIGHT1, GL_POSITION, spotlightPosition);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, spotlightCutoff);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spotlightDirection);
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 50.0f);
+
 	glPushMatrix();
 	glTranslatef(-1.8, 0.0, 12.0);
 	glScalef(0.3, 0.2, 0.5);
@@ -307,26 +342,26 @@ void drawLamp() {
 }
 
 void setupScene() {
-	drawLeftWall();
-	drawRightWall();
-	drawTunnel();
+	if (level == 1) {
+		drawLeftWall();
+		drawRightWall();
+		drawTunnel();
+	}
 	drawFloor();
 	drawLamp();
 }
 
 void drawPlayer() {
-
-
 	//spotlight
 	glEnable(GL_LIGHT2);
 
 	// Spotlight properties
 	float flickerIntensity = 0.3f + 0.6f * sin(timeX * 10.0f); // Vary intensity between 0.3 and 0.9
-	GLfloat spotlightColor[] = { 100*flickerIntensity, 0.0f, 0.0f, 1.0f }; // Red/Cyan color
+	GLfloat spotlightColor[] = { 100.0f, 0.0f, 0.0f, 1.0f }; // Red/Cyan color
 	GLfloat xPos = (playerX == 0.0) ? playerX : ((playerX == 1.5f) ? playerX + 1.3f : playerX - 1.3f);
 	GLfloat spotlightPosition[] = { xPos, playerY + 4.0f, playerZ + 12.0f, 1.0f }; // Slightly above the player
 	GLfloat spotlightDirection[] = { 0.0f, -1.0f, 0.0f }; // Pointing downwards
-	GLfloat spotlightCutoff = 25.0f; // Cone angle in degrees
+	GLfloat spotlightCutoff = 55.0f; // Cone angle in degrees
 
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, spotlightColor);    
 	glLightfv(GL_LIGHT2, GL_SPECULAR, spotlightColor);   
@@ -378,15 +413,15 @@ void resetGameVariables() {
 	isJumping = false;
 	speed = 0.3f;
 
-	leftCoinZ = -3.0f;
-	centreCoinZ = -23.0;
-	rightCoinZ = -43.0;
-	leftBlockZ = -55.0f;
-	centreBlockZ = -35.0;
-	rightBlockZ = -75.0;
-	leftHurdleZ = -21.0f;
-	centreHurdleZ = -41.0f;
-	rightHurdleZ = -61.0;
+	leftCoinZ = -8.0f;
+	centreCoinZ = -28.0;
+	rightCoinZ = -48.0;
+	leftBlockZ = -18.0f;
+	centreBlockZ = -38.0;
+	rightBlockZ = -58.0;
+	leftHurdleZ = -3.0f;
+	centreHurdleZ = -23.0f;
+	rightHurdleZ = -43.0;
 
 	firstPerson = false;
 
@@ -759,6 +794,7 @@ void Display() {
 	drawCentreHurdle(centreHurdleZ);
 	drawRightHurdle(rightHurdleZ);
 
+
 	//this block displays sky in background as sphere and sene is inside sphere
 	glPushMatrix();
 	GLUquadricObj* qobj;
@@ -826,11 +862,15 @@ void Keyboard(unsigned char key, int x, int y) {
 	case '=': //right
 		if (gameRunning && playerX < 1.5) {
 			playerX += 1.5f;
+			//std::thread t4(playBoing);
+			//t4.detach();
 		}
 		break;
 	case '-': //left
 		if (gameRunning && playerX > -1.5) {
 			playerX -= 1.5f;
+			//std::thread t4(playBoing);
+			//t4.detach();
 		}
 		break;
 	case ' ': //start game and jump
@@ -844,6 +884,8 @@ void Keyboard(unsigned char key, int x, int y) {
 		else {
 			if (!isJumping) {
 				isJumping = true;
+				std::thread t4(playBoing);
+				t4.detach();
 			}
 		}
 		break;
@@ -889,6 +931,8 @@ void Mouse(int button, int state, int x, int y)
 			if (gameRunning) {
 				if (!isJumping) {
 					isJumping = true;
+					std::thread t4(playBoing);
+					t4.detach();
 				}
 			}
 		}
@@ -926,6 +970,8 @@ void SpecialKey(int key, int x, int y) {
 			playerX -= 1.5f;
 			/*playerX -= 0.1f;
 			isMovingLeft = true;*/
+			//std::thread t4(playBoing);
+			//t4.detach();
 		}
 		break;
 
@@ -935,6 +981,8 @@ void SpecialKey(int key, int x, int y) {
 			/*
 			playerX += 0.1f;
 			isMovingRight = true;*/
+			//std::thread t4(playBoing);
+			//t4.detach();
 		}
 		break;
 
@@ -989,10 +1037,12 @@ void LoadAssets()
 	rail.Load("Models/imported/grill/Convector grill floor radiator N081220.3ds");
 	//finish line
 	finish_line.Load("Models/imported/finishline/120512_fence_museum_barrier_rope.3DS");
+	finish_line2.Load("Models/imported/finishline2/chain.3ds");
 
 
 	// Loading texture files for sky and ground
 	tex_ground.Load("Textures/grass.bmp");
+	tex_sand.Load("Textures/sand.bmp");
 	loadBMP(&tex, "Textures/blu-sky-3.bmp", true);
 }
 
